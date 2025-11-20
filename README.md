@@ -14,7 +14,7 @@
 - **ניטור יומי**: בדיקת אבטחה אוטומטית
 
 ### 📦 WAHA
-- תמיכה בכל המנועים: WEBJS, NOWEB, VENOM
+- תמיכה בכל המנועים: WEBJS, NOWEB, VENOM, GOWS
 - תמיכה ב-WAHA PRO עם מפתח רישיון
 - Docker Compose מוכן לשימוש
 - Nginx Reverse Proxy עם SSL
@@ -35,20 +35,36 @@
 
 ## 🚀 התקנה
 
-### שלב 1: העתק את הסקריפט לשרת
+### אופציה 1: התקנה מהירה בפקודה אחת (מומלץ)
+
+התחבר לשרת והרץ:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh -o /tmp/install-waha.sh && chmod +x /tmp/install-waha.sh && sudo bash /tmp/install-waha.sh
+```
+
+או עם `wget`:
+
+```bash
+wget -qO /tmp/install-waha.sh https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh && chmod +x /tmp/install-waha.sh && sudo bash /tmp/install-waha.sh
+```
+
+### אופציה 2: הורדה ידנית
+
+#### שלב 1: העתק את הסקריפט לשרת
 
 ```bash
 # על המחשב המקומי שלך
 scp install-waha.sh root@your-server-ip:/root/
 ```
 
-### שלב 2: הכנס לשרת
+#### שלב 2: הכנס לשרת
 
 ```bash
 ssh root@your-server-ip
 ```
 
-### שלב 3: הרץ את הסקריפט
+#### שלב 3: הרץ את הסקריפט
 
 ```bash
 cd /root
@@ -76,12 +92,14 @@ Available WAHA Engines:
   1) WEBJS (default, free)
   2) NOWEB (requires PRO)
   3) VENOM (requires PRO)
-Select engine (1-3, default: 1):
+  4) GOWS (requires PRO)
+Select engine (1-4, default: 1):
 ```
 בחר מנוע:
 - **WEBJS**: חינמי, מבוסס Puppeteer
 - **NOWEB**: דורש PRO, בלי דפדפן
 - **VENOM**: דורש PRO, מהיר יותר
+- **GOWS**: דורש PRO, GoWhatsApp Socket
 
 ### 4. רישיון PRO (אופציונלי)
 ```
