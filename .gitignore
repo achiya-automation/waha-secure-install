@@ -1,0 +1,21 @@
+# SSL certificates (sensitive)
+*.pem
+ssl-*.pem
+
+# Environment files
+.env
+*.env
+
+# Credentials
+*credentials*.txt
+
+# Temporary files
+*.tmp
+*.log
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
