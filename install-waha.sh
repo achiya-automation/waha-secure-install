@@ -124,20 +124,37 @@ echo "Please paste your SSL certificate and private key."
 echo "These will be stored securely and NOT logged."
 echo ""
 
-# Certificate
-echo "Paste your SSL CERTIFICATE (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----),"
-echo "then press Ctrl+D when done:"
-SSL_CERT=$(cat)
+# Certificate - support both environment variables and stdin
+if [[ -n "$SSL_CERT" ]] && [[ -n "$SSL_KEY" ]]; then
+    # Using environment variables (non-interactive mode)
+    log_step "Using SSL certificates from environment variables"
+else
+    # Interactive input
+    echo "Paste your SSL CERTIFICATE (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----),"
+    echo "then press Ctrl+D when done:"
+    SSL_CERT=$(cat)
 
+    if [[ -z "$SSL_CERT" ]]; then
+        log_error "SSL certificate is required"
+        exit 1
+    fi
+
+    echo ""
+    echo "Paste your SSL PRIVATE KEY (including -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY-----),"
+    echo "then press Ctrl+D when done:"
+    SSL_KEY=$(cat)
+
+    if [[ -z "$SSL_KEY" ]]; then
+        log_error "SSL private key is required"
+        exit 1
+    fi
+fi
+
+# Validate SSL cert and key are not empty
 if [[ -z "$SSL_CERT" ]]; then
     log_error "SSL certificate is required"
     exit 1
 fi
-
-echo ""
-echo "Paste your SSL PRIVATE KEY (including -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY-----),"
-echo "then press Ctrl+D when done:"
-SSL_KEY=$(cat)
 
 if [[ -z "$SSL_KEY" ]]; then
     log_error "SSL private key is required"

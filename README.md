@@ -36,7 +36,7 @@
 
 ## 🚀 התקנה
 
-### אופציה 1: התקנה מהירה בפקודה אחת (מומלץ)
+### אופציה 1: התקנה מהירה בפקודה אחת (מומלץ) - Interactive Mode
 
 התחבר לשרת והרץ:
 
@@ -50,7 +50,30 @@ curl -fsSL https://raw.githubusercontent.com/achiya-automation/waha-secure-insta
 wget -qO /tmp/install-waha.sh https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh && chmod +x /tmp/install-waha.sh && sudo bash /tmp/install-waha.sh
 ```
 
-### אופציה 2: הורדה ידנית
+### אופציה 2: התקנה מהירה עם Environment Variables (Non-Interactive)
+
+אם אתה רוצה להריץ את הסקריפט באופן אוטומטי ללא אינטראקציה, אתה יכול להעביר את תעודות ה-SSL דרך environment variables:
+
+```bash
+# הורד את הסקריפט
+curl -fsSL https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh -o /tmp/install-waha.sh && chmod +x /tmp/install-waha.sh
+
+# הרץ עם SSL certificates כ-environment variables
+sudo SSL_CERT="$(cat /path/to/cert.pem)" SSL_KEY="$(cat /path/to/key.pem)" bash /tmp/install-waha.sh << 'EOF'
+your-domain.com
+2222
+1
+n
+y
+EOF
+```
+
+**הסבר הפקודה:**
+- `SSL_CERT="$(cat /path/to/cert.pem)"` - קורא את תעודת ה-SSL מקובץ
+- `SSL_KEY="$(cat /path/to/key.pem)"` - קורא את המפתח הפרטי מקובץ
+- ה-heredoc מספק את התשובות: דומיין, פורט SSH, מנוע WAHA, האם יש רישיון PRO, אישור להתקנה
+
+### אופציה 3: הורדה ידנית
 
 #### שלב 1: העתק את הסקריפט לשרת
 
