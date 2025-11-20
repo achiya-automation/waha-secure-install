@@ -14,8 +14,9 @@
 - **ניטור יומי**: בדיקת אבטחה אוטומטית
 
 ### 📦 WAHA
-- תמיכה בכל המנועים: WEBJS, NOWEB, VENOM, GOWS
-- תמיכה ב-WAHA PRO עם מפתח רישיון
+- **ברירת מחדל**: גרסה חינמית (WEBJS) - לא דורש רישיון!
+- תמיכה בכל המנועים: WEBJS (חינמי), NOWEB, VENOM, GOWS (דורשים PRO)
+- תמיכה ב-WAHA PRO עם מפתח רישיון (אופציונלי)
 - Docker Compose מוכן לשימוש
 - Nginx Reverse Proxy עם SSL
 
