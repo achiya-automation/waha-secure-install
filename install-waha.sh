@@ -428,6 +428,28 @@ volumes:
   waha_data:
 EOF
 
+# Authenticate with Docker registry for PRO images
+if [[ "$WAHA_VERSION" == "pro" && -n "$WAHA_PRO_KEY" ]]; then
+    log_info "Authenticating with Docker registry for WAHA PRO..."
+    echo "$WAHA_PRO_KEY" | docker login -u devlikeapro --password-stdin
+    if [ $? -ne 0 ]; then
+        log_error "Failed to authenticate with Docker registry"
+        log_error "Please verify your WAHA PRO license key is valid"
+        exit 1
+    fi
+
+    log_info "Pulling WAHA PRO image (this may take 2-3 minutes)..."
+    docker pull devlikeapro/waha-plus:latest
+    if [ $? -ne 0 ]; then
+        log_error "Failed to pull WAHA PRO image"
+        docker logout
+        exit 1
+    fi
+
+    log_info "Logging out from Docker registry for security..."
+    docker logout
+fi
+
 log_info "Downloading and starting WAHA Docker container (this may take 1-2 minutes)..."
 cd /opt/waha
 docker compose up -d
