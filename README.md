@@ -36,30 +36,70 @@
 
 ## 🚀 התקנה
 
-### אופציה 1: התקנה מהירה בפקודה אחת (מומלץ) - Interactive Mode
+**חשוב:** הסקריפט דורש תעודות SSL כ-environment variables. יש 2 דרכים להתקנה:
 
-התחבר לשרת והרץ:
+### אופציה 1: התקנה אוטומטית מלאה (מומלץ!)
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh -o /tmp/install-waha.sh && chmod +x /tmp/install-waha.sh && sudo bash /tmp/install-waha.sh
-```
-
-או עם `wget`:
+צור קובץ עם כל הפרטים והרץ אותו:
 
 ```bash
-wget -qO /tmp/install-waha.sh https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh && chmod +x /tmp/install-waha.sh && sudo bash /tmp/install-waha.sh
+# צור את הקובץ (החלף YOUR_DOMAIN ותעודות SSL שלך)
+cat > /tmp/install-waha-auto.sh << 'SCRIPT_EOF'
+#!/bin/bash
+set -e
+
+# הגדר את תעודות ה-SSL
+export SSL_CERT='-----BEGIN CERTIFICATE-----
+YOUR_CERTIFICATE_HERE
+-----END CERTIFICATE-----'
+
+export SSL_KEY='-----BEGIN PRIVATE KEY-----
+YOUR_PRIVATE_KEY_HERE
+-----END PRIVATE KEY-----'
+
+# הורד והרץ את הסקריפט
+wget -qO /tmp/install-waha.sh https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh
+chmod +x /tmp/install-waha.sh
+
+bash /tmp/install-waha.sh << 'EOF'
+YOUR_DOMAIN
+2222
+1
+n
+y
+EOF
+SCRIPT_EOF
+
+# הרץ את הסקריפט
+chmod +x /tmp/install-waha-auto.sh
+bash /tmp/install-waha-auto.sh
 ```
 
-### אופציה 2: התקנה מהירה עם Environment Variables (Non-Interactive)
+**הסבר השורות בheredoc:**
+- `YOUR_DOMAIN` - הדומיין שלך (למשל: waha.example.com)
+- `2222` - פורט SSH (ברירת מחדל)
+- `1` - מנוע WAHA (1=WEBJS חינמי, 2=NOWEB, 3=VENOM, 4=GOWS)
+- `n` - אין רישיון PRO
+- `y` - אישור להתחיל
 
-אם אתה רוצה להריץ את הסקריפט באופן אוטומטי ללא אינטראקציה, אתה יכול להעביר את תעודות ה-SSL דרך environment variables:
+### אופציה 2: התקנה ידנית עם Environment Variables
 
 ```bash
 # הורד את הסקריפט
-curl -fsSL https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh -o /tmp/install-waha.sh && chmod +x /tmp/install-waha.sh
+wget -qO /tmp/install-waha.sh https://raw.githubusercontent.com/achiya-automation/waha-secure-install/main/install-waha.sh
+chmod +x /tmp/install-waha.sh
 
-# הרץ עם SSL certificates כ-environment variables
-sudo SSL_CERT="$(cat /path/to/cert.pem)" SSL_KEY="$(cat /path/to/key.pem)" bash /tmp/install-waha.sh << 'EOF'
+# הגדר environment variables
+export SSL_CERT='-----BEGIN CERTIFICATE-----
+YOUR_CERTIFICATE_HERE
+-----END CERTIFICATE-----'
+
+export SSL_KEY='-----BEGIN PRIVATE KEY-----
+YOUR_PRIVATE_KEY_HERE
+-----END PRIVATE KEY-----'
+
+# הרץ את הסקריפט
+bash /tmp/install-waha.sh << 'EOF'
 your-domain.com
 2222
 1
@@ -68,12 +108,7 @@ y
 EOF
 ```
 
-**הסבר הפקודה:**
-- `SSL_CERT="$(cat /path/to/cert.pem)"` - קורא את תעודת ה-SSL מקובץ
-- `SSL_KEY="$(cat /path/to/key.pem)"` - קורא את המפתח הפרטי מקובץ
-- ה-heredoc מספק את התשובות: דומיין, פורט SSH, מנוע WAHA, האם יש רישיון PRO, אישור להתקנה
-
-### אופציה 3: הורדה ידנית
+### אופציה 3: הורדה ידנית (מתקדמים)
 
 #### שלב 1: העתק את הסקריפט לשרת
 
