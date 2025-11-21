@@ -197,17 +197,17 @@ fi
 # Step 2: System Update
 ################################################################################
 
-log_step "Updating system packages..."
-apt update >/dev/null 2>&1
-apt upgrade -y >/dev/null 2>&1
+log_step "Updating system packages (this may take a few minutes)..."
+apt update
+apt upgrade -y
 log_info "System updated successfully"
 
 ################################################################################
 # Step 3: Install Docker
 ################################################################################
 
-log_step "Installing Docker..."
-apt install -y ca-certificates curl gnupg lsb-release >/dev/null 2>&1
+log_step "Installing Docker (this may take 2-3 minutes)..."
+apt install -y ca-certificates curl gnupg lsb-release
 
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg 2>/dev/null
@@ -218,8 +218,9 @@ echo \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-apt update >/dev/null 2>&1
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin >/dev/null 2>&1
+log_info "Downloading Docker packages..."
+apt update
+apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 systemctl start docker
 systemctl enable docker >/dev/null 2>&1
@@ -252,7 +253,7 @@ log_info "SSH configured on port $SSH_PORT"
 ################################################################################
 
 log_step "Configuring firewall (UFW)..."
-apt install -y ufw >/dev/null 2>&1
+apt install -y ufw
 
 ufw default deny incoming >/dev/null 2>&1
 ufw default allow outgoing >/dev/null 2>&1
@@ -269,7 +270,7 @@ log_info "Firewall configured successfully"
 ################################################################################
 
 log_step "Installing Nginx..."
-apt install -y nginx >/dev/null 2>&1
+apt install -y nginx
 
 # Create SSL directory and save certificates
 mkdir -p /etc/nginx/ssl/$DOMAIN_NAME
@@ -406,8 +407,9 @@ volumes:
   waha_data:
 EOF
 
+log_info "Downloading and starting WAHA Docker container (this may take 1-2 minutes)..."
 cd /opt/waha
-docker compose up -d >/dev/null 2>&1
+docker compose up -d
 log_info "WAHA installed and started successfully"
 
 ################################################################################
@@ -444,7 +446,7 @@ log_info "SSH hardened successfully"
 ################################################################################
 
 log_step "Installing Fail2ban..."
-apt install -y fail2ban >/dev/null 2>&1
+apt install -y fail2ban
 
 cat > /etc/fail2ban/jail.local << EOF
 [sshd]
@@ -490,7 +492,7 @@ log_info "Fail2ban configured successfully"
 ################################################################################
 
 log_step "Configuring automatic security updates..."
-apt install -y unattended-upgrades apt-listchanges >/dev/null 2>&1
+apt install -y unattended-upgrades apt-listchanges
 
 cat > /etc/apt/apt.conf.d/50unattended-upgrades << 'EOF'
 Unattended-Upgrade::Allowed-Origins {
