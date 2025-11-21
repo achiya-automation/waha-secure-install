@@ -94,25 +94,46 @@ case $ENGINE_CHOICE in
     *)
         log_warn "Invalid choice, using WEBJS"
         WAHA_ENGINE="WEBJS"
+        ENGINE_CHOICE=1
         ;;
 esac
 
+# Check if selected engine requires PRO
+REQUIRES_PRO=false
+if [[ $ENGINE_CHOICE =~ ^[234]$ ]]; then
+    REQUIRES_PRO=true
+    log_warn "⚠️  Engine $WAHA_ENGINE requires WAHA PRO license"
+fi
+
 # PRO License
 echo ""
-read -p "Do you have a WAHA PRO license? (y/N): " HAS_PRO
-HAS_PRO=${HAS_PRO:-n}
-
-if [[ "$HAS_PRO" =~ ^[Yy]$ ]]; then
+if [[ "$REQUIRES_PRO" == "true" ]]; then
+    log_step "This engine requires WAHA PRO license"
     read -sp "Enter your WAHA PRO license key: " WAHA_PRO_KEY
     echo ""
     if [[ -z "$WAHA_PRO_KEY" ]]; then
-        log_warn "No license key provided, continuing with CORE version"
-        WAHA_VERSION="core"
+        log_error "ERROR: Engine $WAHA_ENGINE requires a PRO license key!"
+        log_error "Please provide a valid license key or choose engine 1 (WEBJS - free)"
+        exit 1
     else
         WAHA_VERSION="pro"
     fi
 else
-    WAHA_VERSION="core"
+    read -p "Do you have a WAHA PRO license? (y/N): " HAS_PRO
+    HAS_PRO=${HAS_PRO:-n}
+
+    if [[ "$HAS_PRO" =~ ^[Yy]$ ]]; then
+        read -sp "Enter your WAHA PRO license key: " WAHA_PRO_KEY
+        echo ""
+        if [[ -z "$WAHA_PRO_KEY" ]]; then
+            log_warn "No license key provided, continuing with CORE version"
+            WAHA_VERSION="core"
+        else
+            WAHA_VERSION="pro"
+        fi
+    else
+        WAHA_VERSION="core"
+    fi
 fi
 
 # SSL Certificates
