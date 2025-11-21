@@ -124,32 +124,51 @@ echo "Please paste your SSL certificate and private key."
 echo "These will be stored securely and NOT logged."
 echo ""
 
-# Certificate - READ FROM ENVIRONMENT VARIABLES ONLY
-# This is the ONLY way that works reliably with non-interactive execution
+# Certificate - support both environment variables and interactive input
+if [[ -n "$SSL_CERT" ]] && [[ -n "$SSL_KEY" ]]; then
+    # Using environment variables (for automation)
+    log_step "Using SSL certificates from environment variables"
+else
+    # Interactive input - read directly from terminal
+    echo "Please provide your SSL certificate."
+    echo "Paste the FULL certificate (from -----BEGIN to -----END), then press Enter and type 'END' on a new line:"
 
-if [[ -z "$SSL_CERT" ]] || [[ -z "$SSL_KEY" ]]; then
+    SSL_CERT=""
+    while IFS= read -r line; do
+        if [[ "$line" == "END" ]]; then
+            break
+        fi
+        SSL_CERT+="$line"$'\n'
+    done
+
+    # Remove trailing newline
+    SSL_CERT="${SSL_CERT%$'\n'}"
+
+    if [[ -z "$SSL_CERT" ]]; then
+        log_error "SSL certificate is required"
+        exit 1
+    fi
+
     echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    log_error "SSL certificates must be provided via environment variables"
-    echo ""
-    echo "Usage:"
-    echo "  export SSL_CERT='-----BEGIN CERTIFICATE-----"
-    echo "  ...your certificate..."
-    echo "  -----END CERTIFICATE-----'"
-    echo ""
-    echo "  export SSL_KEY='-----BEGIN PRIVATE KEY-----"
-    echo "  ...your private key..."
-    echo "  -----END PRIVATE KEY-----'"
-    echo ""
-    echo "  Then run: bash install-waha.sh"
-    echo ""
-    echo "Or use the automated script:"
-    echo "  See README.md for instructions"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    exit 1
+    echo "Please provide your SSL private key."
+    echo "Paste the FULL private key (from -----BEGIN to -----END), then press Enter and type 'END' on a new line:"
+
+    SSL_KEY=""
+    while IFS= read -r line; do
+        if [[ "$line" == "END" ]]; then
+            break
+        fi
+        SSL_KEY+="$line"$'\n'
+    done
+
+    # Remove trailing newline
+    SSL_KEY="${SSL_KEY%$'\n'}"
+
+    if [[ -z "$SSL_KEY" ]]; then
+        log_error "SSL private key is required"
+        exit 1
+    fi
 fi
-
-log_step "Using SSL certificates from environment variables"
 
 # Generate random credentials (no logging)
 WAHA_API_KEY=$(openssl rand -hex 16)
