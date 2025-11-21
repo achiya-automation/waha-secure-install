@@ -226,6 +226,28 @@ systemctl enable docker >/dev/null 2>&1
 log_info "Docker installed successfully"
 
 ################################################################################
+# Step 3.5: Configure SSH Port (BEFORE Firewall!)
+################################################################################
+
+log_step "Configuring SSH port..."
+
+# Backup original config
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+
+# Update SSH port
+if grep -q "^Port " /etc/ssh/sshd_config; then
+    sed -i "s/^Port .*/Port $SSH_PORT/" /etc/ssh/sshd_config
+elif grep -q "^#Port 22" /etc/ssh/sshd_config; then
+    sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+else
+    sed -i "1i Port $SSH_PORT" /etc/ssh/sshd_config
+fi
+
+# Restart SSH to apply new port
+systemctl restart sshd
+log_info "SSH configured on port $SSH_PORT"
+
+################################################################################
 # Step 4: Configure Firewall
 ################################################################################
 
@@ -389,24 +411,12 @@ docker compose up -d >/dev/null 2>&1
 log_info "WAHA installed and started successfully"
 
 ################################################################################
-# Step 7: Configure SSH
+# Step 7: Add SSH Security Settings
 ################################################################################
 
-log_step "Hardening SSH configuration..."
+log_step "Adding SSH security hardening..."
 
-# Backup original config
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
-
-# Update SSH port
-if grep -q "^Port " /etc/ssh/sshd_config; then
-    sed -i "s/^Port .*/Port $SSH_PORT/" /etc/ssh/sshd_config
-elif grep -q "^#Port 22" /etc/ssh/sshd_config; then
-    sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
-else
-    sed -i "1i Port $SSH_PORT" /etc/ssh/sshd_config
-fi
-
-# Add security settings
+# Add security settings (Port already configured in Step 3.5)
 cat >> /etc/ssh/sshd_config << 'EOF'
 
 # Enhanced Security Settings
