@@ -253,6 +253,17 @@ ssh -p YOUR_SSH_PORT root@your-server-ip
 
 **דירוג כולל: A+ 🏆**
 
+### 📌 הערה חשובה על IP Forwarding
+
+הסקריפט **מפעיל** את `net.ipv4.ip_forward = 1` כדי לאפשר ל-Docker לעבוד תקין.
+
+**זה בטוח לחלוטין!** 🛡️
+- Docker **חייב** את זה כדי להעביר תעבורת רשת מהקונטיינרים לאינטרנט
+- זה **לא** פותח את השרת שלך לאינטרנט
+- חומת האש (UFW) עדיין מגנה עליך
+- הקונטיינרים מבודדים ומוגנים על ידי Docker
+- **בלי זה - WAHA לא יוכל להתחבר ל-WhatsApp!**
+
 ## 📊 השפעה על משאבים
 
 השיפורים האבטחתיים צורכים:
@@ -263,6 +274,22 @@ ssh -p YOUR_SSH_PORT root@your-server-ip
 השרת נשאר מהיר ויעיל! ⚡
 
 ## 🐛 פתרון בעיות
+
+### WAHA תקוע ב-"Starting" / לא מצליח לסרוק QR
+```bash
+# בדוק אם IP forwarding מופעל
+sysctl net.ipv4.ip_forward
+# צריך להראות: net.ipv4.ip_forward = 1
+
+# אם זה 0, הפעל אותו:
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# בדוק שהקונטיינר יכול להתחבר לאינטרנט:
+docker exec waha curl -I https://web.whatsapp.com
+
+# אם זה תקוע - הפעל מחדש את הקונטיינר:
+cd /opt/waha && docker compose restart
+```
 
 ### לא יכול להתחבר ב-SSH
 ```bash

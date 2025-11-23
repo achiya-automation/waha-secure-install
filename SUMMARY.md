@@ -56,6 +56,7 @@
 | **Monitoring** | בדיקה יומית + לוג מרוכז |
 | **Kernel** | הגנה מפני SYN Flood, IP Spoofing, ICMP |
 | **Docker** | רק localhost binding (127.0.0.1:3000) |
+| **IP Forwarding** | מופעל עבור Docker (בטוח!) |
 | **Credentials** | ייצור אקראי מאובטח, ללא הדפסה ללוגים |
 
 ---

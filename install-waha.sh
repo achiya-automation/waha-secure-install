@@ -570,8 +570,10 @@ log_info "Automatic security updates configured"
 
 log_step "Applying kernel security hardening..."
 cat > /etc/sysctl.d/99-security-hardening.conf << 'EOF'
-# IP Forwarding
-net.ipv4.ip_forward = 0
+# IP Forwarding - ENABLED for Docker containers
+# Docker requires IP forwarding to route traffic between containers and the internet
+# This is safe and does NOT expose your server to external attacks
+net.ipv4.ip_forward = 1
 net.ipv6.conf.all.forwarding = 0
 
 # SYN Flood Protection
